@@ -16,6 +16,6 @@ Shopaholics will benefit those all around the world by creating a safe app those
 ## UML Diagram
 ## Plan and Effort Estimate
 Planning and initial development: March 1-7  
-Creation of classes and methods: March 8-15
-Implement JavaFX and create GUI: March 16-29
+Creation of classes and methods: March 8-15  
+Implement JavaFX and create GUI: March 16-29  
 Editing and debugging: March 30 - April 9

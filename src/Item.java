@@ -1,8 +1,8 @@
 import java.util.Random;
 
 public abstract class Item {
-    private int ID;
-    private double price;
+    protected int ID;
+    protected double price;
 
     //yet to be implemented
     public void addImage(String imagePath){

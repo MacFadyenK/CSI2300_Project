@@ -19,7 +19,7 @@ public abstract class Item {
     //equal likelihood for all discounts
     public void discount(){
         //gets random discount from 5-50%
-        double percent = new Random().nextInt(5, 50);
+        int percent = new Random().nextInt(5, 50);
         this.price = price - (percent*price)/100.0;
     }
 

@@ -6,4 +6,9 @@ public abstract class Jewelry extends Item {
     public String getMetalType(){
         return this.metalType;
     }
+
+    //sets the type of metal the jewelry is made out of
+    public void setMetalType(String metal){
+        this.metalType = metal;
+    }
 }

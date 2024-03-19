@@ -4,6 +4,8 @@ public abstract class Item {
     protected int ID;
     protected double price;
     protected String image;
+    protected String description;
+    protected String name;
 
     //adds an image path to the item for a representative image
     public void addImage(String imagePath){
@@ -28,8 +30,24 @@ public abstract class Item {
         return this.price;
     }
 
+    //returns the name of the object
+    public String getName() {
+        return name;
+    }
+
+    //returns a description of the product
+    public String getDescription() {
+        return this.description;
+    }
+
     //returns the ID of the item
     public int getID(){
         return this.ID;
+    }
+
+    //displays a copy of important information of the item
+    public void displayPhotocopy() {
+        System.out.println("[Photocopy of " + this.getName() + " (ID: " + this.getID() + ")]");
+        // Additional display logic specific to clothing items can be added here
     }
 }

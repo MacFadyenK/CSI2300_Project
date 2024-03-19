@@ -3,10 +3,12 @@ public class Bracelet extends Jewelry {
 
     //constructor creates a bracelet item with the metal type and the price specified
     //generates an ID for the bracelet as well
-    public Bracelet(String metalType, double price){
+    public Bracelet(String name, String metalType, double price, String description){
+        this.name = name;
         this.metalType = metalType;
         this.price = price;
         this.ID = setID();
+        this.description = description;
     }
 
     //sets the ID of the bracelet, all IDs are 3 digits

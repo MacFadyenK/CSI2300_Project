@@ -11,23 +11,23 @@ public class ShoppingCart {
         this.scanner = new Scanner(System.in);
     }
 
-   // Method to add an item to the cart
-   public void addItem(Item item) {
+    // Method to add an item to the cart
+    public void addItem(Item item) {
     items.add(item);
     System.out.println("Item with ID " + item.getID() + " has been added to your cart.");
-}
+    }
 
-// Method to choose size for the item
-private String chooseSize(Item item) {
-    System.out.println("Enter size for " + item.getName() + ": ");
-    return scanner.nextLine();
-}
+    // Method to choose size for the item
+    private String chooseSize(Item item) {
+        System.out.println("Enter size for " + item.getName() + ": ");
+        return scanner.nextLine();
+    }
 
-// Method to choose color for the item
-private String chooseColor(Item item) {
-    System.out.println("Enter color for " + item.getName() + ": ");
-    return scanner.nextLine();
-}
+    // Method to choose color for the item
+    private String chooseColor(Item item) {
+        System.out.println("Enter color for " + item.getName() + ": ");
+        return scanner.nextLine();
+    }
 
 
     // Method to display the items in the cart

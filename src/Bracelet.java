@@ -12,7 +12,7 @@ public class Bracelet extends Jewelry {
     }
 
     //sets the ID of the bracelet, all IDs are 3 digits
-    //bracelet IDs start with a 2, and count up from 200 from each bracelet made
+    //bracelet IDs start with a 2, and count up from 200 from each bracelet selected
     private int setID(){
         return 200+number++;
     }

@@ -6,6 +6,7 @@ public abstract class Item {
     protected String image;
     protected String description;
     protected String name;
+    protected int quantity;
 
     //adds an image path to the item for a representative image
     public void addImage(String imagePath){
@@ -43,6 +44,11 @@ public abstract class Item {
     //returns the ID of the item
     public int getID(){
         return this.ID;
+    }
+
+    //returns the quantity of the item desired
+    public int getQuantity(){
+        return this.quantity;
     }
 
     //displays a copy of important information of the item

@@ -4,13 +4,14 @@ public class Ring extends Jewelry {
 
     //ring constructor which sets the ring size, metal type, and the price
     //generates the individual item ID
-    public Ring(String name, int size, String metalType, double price, String description){
+    public Ring(String name, int size, String metalType, double price, String description, int quantity){
         this.name = name;
         this.size = size;
         this.metalType = metalType;
         this.price = price;
         this.ID = setID();
         this.description = description;
+        this.quantity = quantity;
     }
 
     //returns the ring size of the ring

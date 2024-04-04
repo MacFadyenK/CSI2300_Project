@@ -7,6 +7,8 @@ public abstract class Item {
     protected String description;
     protected String name;
     protected int quantity;
+    protected int percent;
+    public boolean onSale = false;
 
     //adds an image path to the item for a representative image
     public void addImage(String imagePath){
@@ -22,8 +24,14 @@ public abstract class Item {
     //equal likelihood for all discounts
     public void discount(){
         //gets random discount from 5-50%
-        int percent = new Random().nextInt(5, 50);
+        this.percent = new Random().nextInt(5, 50);
         this.price = price - (percent*price)/100.0;
+        this.onSale = true;
+    }
+
+    //returns the discount percent on the item
+    public int getPercent(){
+        return this.percent;
     }
 
     //returns the price of the item
@@ -33,7 +41,7 @@ public abstract class Item {
 
     //returns the name of the object
     public String getName() {
-        return name;
+        return this.name;
     }
 
     //returns a description of the product

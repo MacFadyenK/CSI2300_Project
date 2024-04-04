@@ -11,7 +11,7 @@ public class TShirt extends ClothingItem {
     }
 
     //sets the ID of the tshirt, all IDs are 3 digits
-    //tshirt IDs start with a 7, and count up from 700 from each  object made
+    //tshirt IDs start with a 7, and count up from 700 from each object made
     private int setID(){
         return 700+number++;
     }

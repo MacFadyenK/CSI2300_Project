@@ -3,14 +3,11 @@ public class TennisShoes extends Shoes {
 
     //constructor creates tennis shoes object with specified shoe size and price
     //sets the individual ID of the object
-    public TennisShoes(String name, int size, double price, String color, String description, int quantity){
+    public TennisShoes(String name, double price, String description){
         this.name = name;
-        this.size = size;
         this.price = price;
         this.ID = setID();
-        this.color = color;
         this.description = description;
-        this.quantity = quantity;
     }
     
     //sets the ID of the tennis shoes, all IDs are 3 digits

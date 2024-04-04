@@ -3,13 +3,11 @@ public class Earrings extends Jewelry {
 
     //constructor creates an earring pair with specified metal type and price
     //generates an individual ID for the earring pair
-    public Earrings(String name, String metalType, double price, String description, int quantity){
+    public Earrings(String name, double price, String description){
         this.name = name;
-        this.metalType = metalType;
         this.price = price;
         this.ID = setID();
-        this.description = description; 
-        this.quantity = quantity;
+        this.description = description;
     }
 
     //sets the ID of the earrings, all IDs are 3 digits

@@ -3,14 +3,11 @@ public class Sweatshirt extends ClothingItem {
 
     //constructor creates sweatshirt object with specified size and price
     //sets the individual ID of the object
-    public Sweatshirt(String name, int size, double price, String color, String description, int quantity){
+    public Sweatshirt(String name, double price, String description){
         this.name = name;
-        this.size = size;
         this.price = price;
         this.ID = setID();
-        this.color = color;
         this.description = description;
-        this.quantity = quantity;
     }
     
     //sets the ID of the sweatshirt, all IDs are 3 digits

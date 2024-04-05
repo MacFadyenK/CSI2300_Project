@@ -3,6 +3,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,10 +27,10 @@ public class GUI extends Application {
     DressShoes dressshoes = new DressShoes("Dress Shoes", 110.00, "Real leather dress shoes");
     Ring ring = new Ring("Diamond Ring", 3500.00, "1 carat diamond ring");
     Earrings earrings = new Earrings("Hoop earring", 49.99, "12mm diameter hoop earring set");
-    Bracelet bracelet = new Bracelet("Gold CLasp Bracelet", 69.99, "Gold bracelet with an easy use clasp");
+    Bracelet bracelet = new Bracelet("Gold Clasp Bracelet", 69.99, "Gold bracelet with an easy use clasp");
 
     ArrayList<Item> itemsForSale = new ArrayList<>();
-    public void shuffleSaleItems(){
+    public void addAndShuffleSaleItems(){
         itemsForSale.add(tshirt);
         itemsForSale.add(sweatshirt);
         itemsForSale.add(sweatpants);
@@ -91,19 +92,64 @@ public class GUI extends Application {
     public void start(Stage primaryStage){
         //discounts an item upon start
         createDiscountItem();
-        shuffleSaleItems();
 
         //title of the stage
         primaryStage.setTitle("Shopaholic");
 
+        //initial Display area of items
+        VBox middleDisplay = new VBox();
+
+        //put 5 items on display
+        addAndShuffleSaleItems();
+        for(int i = 0; i<5; i++){
+            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i), false));
+        }
+
         //Search Bar
         HBox searchArea = new HBox(10);
 
-        Label search = new Label("Search:");
-        ComboBox searchBox = new ComboBox();
+        //search filter options
+        String[] categories = {"All","Jewelry", "Shoes", "Clothing"};
 
-        searchArea.getChildren().addAll(search, searchBox);
-        BorderPane.setAlignment(search, Pos.CENTER);
+        Label searchLbl = new Label("Search:");
+        ComboBox<String> searchBox = new ComboBox<>(FXCollections
+        .observableArrayList(categories));
+
+        searchBox.setOnAction(e -> {
+            middleDisplay.getChildren().clear();
+            String filter = searchBox.getValue();
+            switch(filter){
+                case "Jewelry":
+                    for(Item item : itemsForSale){
+                        if(item instanceof Jewelry){
+                            middleDisplay.getChildren().add(new ItemDisplay(item, false));
+                        }
+                    }
+                    break;
+                case "Shoes":
+                    for(Item item : itemsForSale){
+                        if(item instanceof Shoes){
+                            middleDisplay.getChildren().add(new ItemDisplay(item, false));
+                        }
+                    }
+                    break;
+                case "Clothing":
+                    for(Item item : itemsForSale){
+                        if(item instanceof ClothingItem){
+                            middleDisplay.getChildren().add(new ItemDisplay(item, false));
+                        }
+                    }
+                    break;
+                default:
+                    Collections.shuffle(itemsForSale);
+                    for(int i = 0; i<5; i++){
+                        middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i), false));
+                    }
+            }
+        });
+
+        searchArea.getChildren().addAll(searchLbl, searchBox);
+        BorderPane.setAlignment(searchLbl, Pos.CENTER);
 
         //Shopping cart
         HBox cartArea = new HBox(10);
@@ -119,14 +165,6 @@ public class GUI extends Application {
         topBar.setCenter(searchArea);
         topBar.setRight(cartArea);
         BorderPane.setAlignment(searchArea, Pos.TOP_CENTER);
-
-        //initial Display area of items
-        VBox middleDisplay = new VBox();
-
-        //put 5 items on display
-        for(int i = 0; i<5; i++){
-            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i), false));
-        }
 
         //Discount display box on the left
         VBox discountDisplay = new VBox();

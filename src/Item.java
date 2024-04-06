@@ -9,6 +9,7 @@ public abstract class Item {
     protected int quantity;
     protected int percent;
     public boolean onSale = false;
+    public boolean inCart = false;
 
     //adds an image path to the item for a representative image
     public void addImage(String imagePath){

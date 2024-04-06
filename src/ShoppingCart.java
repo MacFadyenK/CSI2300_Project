@@ -14,6 +14,7 @@ public class ShoppingCart {
     // Method to add an item to the cart
     public void addItem(Item item) {
     items.add(item);
+    item.inCart = true;
     System.out.println("Item with ID " + item.getID() + " has been added to your cart.");
     }
 

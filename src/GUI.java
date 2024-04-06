@@ -106,7 +106,7 @@ public class GUI extends Application {
         //put 5 items on display
         addAndShuffleSaleItems();
         for(int i = 0; i<5; i++){
-            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i), false));
+            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
         }
 
         //Search Bar
@@ -126,28 +126,28 @@ public class GUI extends Application {
                 case "Jewelry":
                     for(Item item : itemsForSale){
                         if(item instanceof Jewelry){
-                            middleDisplay.getChildren().add(new ItemDisplay(item, false));
+                            middleDisplay.getChildren().add(new ItemDisplay(item));
                         }
                     }
                     break;
                 case "Shoes":
                     for(Item item : itemsForSale){
                         if(item instanceof Shoes){
-                            middleDisplay.getChildren().add(new ItemDisplay(item, false));
+                            middleDisplay.getChildren().add(new ItemDisplay(item));
                         }
                     }
                     break;
                 case "Clothing":
                     for(Item item : itemsForSale){
                         if(item instanceof ClothingItem){
-                            middleDisplay.getChildren().add(new ItemDisplay(item, false));
+                            middleDisplay.getChildren().add(new ItemDisplay(item));
                         }
                     }
                     break;
                 default:
                     Collections.shuffle(itemsForSale);
                     for(int i = 0; i<5; i++){
-                        middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i), false));
+                        middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
                     }
             }
         });
@@ -216,7 +216,7 @@ public class GUI extends Application {
     }
 
     public class ItemDisplay extends HBox{
-        public ItemDisplay(Item item, boolean inCart){
+        public ItemDisplay(Item item){
             //adds the item image to the display
             if(item.getImage() != null){
                 this.getChildren().add(new ImageView(new Image(item.getImage())));
@@ -232,7 +232,7 @@ public class GUI extends Application {
             this.getChildren().add(text);
 
             //whethere item display is within the cart or not
-            if(inCart == true){    //item display is in cart
+            if(item.inCart == true){    //item display is in cart
                 //adds remove from cart button
                 Button removeBtn = new Button("Remove");
                 this.getChildren().add(removeBtn);
@@ -261,16 +261,14 @@ public class GUI extends Application {
 
     //handles when a button is pressed to add it to the cart.
     private void handleCartAddition(Item item){
-        for(Item e : cart.getCart()){
-            if(item == e){
-                Label alrAddedText = new Label("Item has already been added to cart.");
-                Scene alrAddedPopup = new Scene(alrAddedText, 300, 100);
-                Stage popupStage = new Stage();
-                popupStage.setTitle("Warning");
-                popupStage.setScene(alrAddedPopup);
-                popupStage.show();
-                return;
-            }
+        if(item.inCart == true){
+            Label alrAddedText = new Label("Item has already been added to cart.");
+            Scene alrAddedPopup = new Scene(alrAddedText, 300, 100);
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Warning");
+            popupStage.setScene(alrAddedPopup);
+            popupStage.show();
+            return;
         }
         cart.addItem(item);
     }

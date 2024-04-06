@@ -29,6 +29,11 @@ public class ShoppingCart {
         return scanner.nextLine();
     }
 
+    //gets the arraylist for all items in cart
+    public List<Item> getCart(){
+        return items;
+    }
+
 
     // Method to display the items in the cart
     public void displayCart() {

@@ -28,8 +28,12 @@ public class GUI extends Application {
     Ring ring = new Ring("Diamond Ring", 3500.00, "1 carat diamond ring");
     Earrings earrings = new Earrings("Hoop earring", 49.99, "12mm diameter hoop earring set");
     Bracelet bracelet = new Bracelet("Gold Clasp Bracelet", 69.99, "Gold bracelet with an easy use clasp");
-
+    //list for items
     ArrayList<Item> itemsForSale = new ArrayList<>();
+
+    //instantiate shopping cart
+    ShoppingCart cart = new ShoppingCart();
+
     public void addAndShuffleSaleItems(){
         itemsForSale.add(tshirt);
         itemsForSale.add(sweatshirt);
@@ -170,18 +174,25 @@ public class GUI extends Application {
         VBox discountDisplay = new VBox();
         discountDisplay.getChildren().add(new Label("Discount!"));
         //finds sale item from all possible items
-        for(Item e : itemsForSale){
-            if(e.onSale == true){
+        for(Item i : itemsForSale){
+            if(i.onSale == true){
                 //adds image of item
-                if(e.getImage() != null){
-                    discountDisplay.getChildren().add(new ImageView(new Image(e.getImage())));
+                if(i.getImage() != null){
+                    discountDisplay.getChildren().add(new ImageView(new Image(i.getImage())));
                 }
                 //adds name and price and percent discount
-                discountDisplay.getChildren().addAll(new Label(e.getName()), 
-                new Label("$"+String.format("%.2f", e.getPrice())),
-                new Label(e.getPercent()+"% OFF"));
+                discountDisplay.getChildren().addAll(new Label(i.getName()), 
+                new Label("$"+String.format("%.2f", i.getPrice())),
+                new Label(i.getPercent()+"% OFF"));
+                
+                //adds button to buy discount item
+                Button buyDealButton = new Button("Buy Now!");
+                discountDisplay.getChildren().add(buyDealButton);
+                //deal button being pressed
+                buyDealButton.setOnAction(e -> handleCartAddition(i));
             } 
         }
+
         //border style for the discount display
         discountDisplay.setStyle("-fx-padding: 10;" + 
         "-fx-border-style: solid inside;" + 
@@ -232,9 +243,7 @@ public class GUI extends Application {
                 this.getChildren().add(addBtn);
 
                 //action taken when button clicked to add to cart
-                addBtn.setOnAction(e -> {
-
-                });
+                addBtn.setOnAction(e -> handleCartAddition(item));
             }
 
             //when user clicks on the item display
@@ -250,21 +259,51 @@ public class GUI extends Application {
         }
     }
 
+    //handles when a button is pressed to add it to the cart.
+    private void handleCartAddition(Item item){
+        for(Item e : cart.getCart()){
+            if(item == e){
+                Label alrAddedText = new Label("Item has already been added to cart.");
+                Scene alrAddedPopup = new Scene(alrAddedText, 300, 100);
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Warning");
+                popupStage.setScene(alrAddedPopup);
+                popupStage.show();
+                return;
+            }
+        }
+        cart.addItem(item);
+    }
+
     //handles when an item display is clicked on and changes the window to show the item more detailed
     private void handleItemClicked(Item item) {
         GridPane itemLayout = new GridPane();
 
+        //shows item image
         if(item.getImage() != null){
             itemLayout.add(new ImageView(new Image(item.getImage())), 0, 0);
         }
+        //box for item details
         VBox text = new VBox();
         text.getChildren().add(new Label(item.getName()));
         text.getChildren().add(new Label("$"+String.format("%.2f", item.getPrice())));
         text.getChildren().add(new Label(item.getDescription()));
+        
+        //quantity and size dropdowns
 
+        itemLayout.add(text, 1, 0);
+
+        //add to cart button
+        Button addToCart = new Button("Add to cart");
+        itemLayout.add(addToCart, 2, 0);
+
+        //when clicking the add to cart button
+        addToCart.setOnAction(e -> handleCartAddition(item));
+
+        //make new stage and scene for the item details page
         Scene itemScene = new Scene(itemLayout, 500, 500);
         Stage itemStage = new Stage();
-        itemStage.setTitle("Shopaholic."+item.getName());
+        itemStage.setTitle("Shopaholic: "+item.getName());
         itemStage.setScene(itemScene);
         itemStage.show();
     }

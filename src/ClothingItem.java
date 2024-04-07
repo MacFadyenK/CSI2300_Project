@@ -1,23 +1,13 @@
 public abstract class ClothingItem extends Item {
-    protected int size;
-    protected String color;
-    
- //returns the Clothing size
- public int getSize(){
-    return this.size;
-}
+    protected String color = "White";
 
-//sets the size of the clothes
-public void setSize(int newSize){
-    this.size = newSize;
-}
+    //returns the color of the clothes
+    public String getColor() {
+        return color;
+    }
 
-//returns the color of the clothes
-public String getColor() {
-    return color;
-}
-
-public void setColor(String newColor){
-    this.color = newColor;
-}   
+    //sets the color of the clothes
+    public void setColor(String newColor){
+        this.color = newColor;
+    }   
 }

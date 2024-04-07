@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -164,6 +165,9 @@ public class GUI extends Application {
                     discountDisplay.getChildren().remove(removeDealItem);
                     discountDisplay.getChildren().add(buyDealButton);
                 });
+
+                //sets click on item handler
+                discountDisplay.setOnMouseClicked(e -> handleItemClicked(i));
             }
         }
         //border style for the discount display
@@ -234,7 +238,10 @@ public class GUI extends Application {
                     }
                     break;
                 default:
-                    populateFullDisplay();
+                    Collections.shuffle(itemsForSale);
+                    for(int i = 0; i<5; i++){
+                        middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
+                    }
                     border.setLeft(discountDisplay);
                     break;
             }
@@ -349,6 +356,25 @@ public class GUI extends Application {
         cartButton.setText("" + cart.getNumItems());
     }
 
+    //arrays for item detail dropdowns
+    String[] metalTypes = {"Gold", "Silver", "Rose Gold", "Platinum", "Tungsten"};
+    String[] colors = {"White", "Black", "Gray", "Red", "Pink", "Blue", "Green", "Yellow", "Orange"};
+    String[] sizes = {"S", "M", "L", "XL"};
+
+    //checks if string is an integer
+    private boolean isValidInt(String text) {
+        if (text == null || text.isEmpty()) {
+            return true; // Allow empty input
+        }
+
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     //handles when an item display is clicked on and changes the window to show the item more detailed
     private void handleItemClicked(Item item) {
         GridPane itemLayout = new GridPane();
@@ -363,21 +389,88 @@ public class GUI extends Application {
         text.getChildren().add(new Label("$"+String.format("%.2f", item.getPrice())));
         text.getChildren().add(new Label(item.getDescription()));
         
-        //quantity and size dropdowns
+        //quantity, size, and color dropdowns
+        HBox dropdowns = new HBox(10);
+
+        Label qtyLabel = new Label("Quantity:");
+        TextField quantityField = new TextField("1");
+        //only allows integer values to be input into text field
+        quantityField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!isValidInt(newValue)) {
+                quantityField.setText(oldValue);
+            }
+        });
+
+        //size selector
+        Label sizeLabel = new Label("Size:");
+        ComboBox<String> sizeBox = new ComboBox<>(FXCollections
+        .observableArrayList(sizes));
+        sizeBox.getSelectionModel().select(0);
+
+        //color selector
+        Label colorLabel = new Label("Color:");
+        ComboBox<String> colorBox = new ComboBox<>(FXCollections
+        .observableArrayList(colors));
+        colorBox.getSelectionModel().select(0);
+
+        //metal type selector
+        Label metalLabel = new Label("Metal:");
+        ComboBox<String> metalTypeBox = new ComboBox<>(FXCollections
+        .observableArrayList(metalTypes));
+        metalTypeBox.getSelectionModel().select(0);
+
+        //add each element to dropdowns area
+        dropdowns.getChildren().addAll(qtyLabel, quantityField, sizeLabel, sizeBox);
+        if(item instanceof Jewelry){
+            dropdowns.getChildren().addAll(metalLabel, metalTypeBox);
+        }else{
+            dropdowns.getChildren().addAll(colorLabel, colorBox);
+        }
+
+        //add dropdowns to text area
+        text.getChildren().add(dropdowns);
 
         itemLayout.add(text, 1, 0);
 
         //add to cart button
         Button addToCart = new Button("Add to cart");
-        itemLayout.add(addToCart, 2, 0);
 
         //remove from cart button
         Button removeFromCart = new Button("Remove");
+        if(!item.inCart){
+            itemLayout.add(addToCart, 2, 0);
+        }else{
+            itemLayout.add(removeFromCart, 2, 0);
+        }
 
         //when clicking the add to cart button
-        addToCart.setOnAction(e -> {handleCartAddition(item);
+        addToCart.setOnAction(e -> {
             itemLayout.getChildren().remove(addToCart);
             itemLayout.add(removeFromCart, 2, 0);
+
+            //sets the quantity of the item
+            try{
+                item.setQuantity(Integer.parseInt(quantityField.getText()));
+            }catch(NumberFormatException ex){
+                item.setQuantity(1);
+            }
+            System.out.println(item.getQuantity());
+
+            //sets the color/metaltype of the item
+            if(item instanceof ClothingItem){
+                ((ClothingItem) item).setColor(colorBox.getValue());
+                System.out.println(((ClothingItem) item).getColor());
+            }else if (item instanceof Shoes){
+                ((Shoes) item).setColor(colorBox.getValue());
+                System.out.println(((Shoes) item).getColor());
+            }else{
+                ((Jewelry) item).setMetalType(metalTypeBox.getValue());
+            }
+
+            //sets the size
+            item.setSize(sizeBox.getValue());
+
+            handleCartAddition(item);
         });
 
         //when removing item from cart
@@ -387,7 +480,7 @@ public class GUI extends Application {
         });
 
         //make new stage and scene for the item details page
-        Scene itemScene = new Scene(itemLayout, 500, 500);
+        Scene itemScene = new Scene(itemLayout, 600, 500);
         Stage itemStage = new Stage();
         itemStage.setTitle("Shopaholic: "+item.getName());
         itemStage.setScene(itemScene);

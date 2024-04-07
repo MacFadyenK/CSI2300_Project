@@ -18,6 +18,15 @@ public class ShoppingCart {
     System.out.println("Item with ID " + item.getID() + " has been added to your cart.");
     }
 
+    //Method counts the number of items in the cart
+    public int getNumItems(){
+        int count = 0;
+        for(Item i : items){
+            count += 1*i.getQuantity();
+        }
+        return count;
+    }
+
     // Method to choose size for the item
     private String chooseSize(Item item) {
         System.out.println("Enter size for " + item.getName() + ": ");
@@ -46,10 +55,12 @@ public class ShoppingCart {
     }
     
    //Method for removing items from cart
-    public void removeItem(int id) {
-            System.out.println("Item with ID " + id + " has been removed from your cart.");
-                return;
-            }
+    public void removeItem(Item item) {
+        items.remove(item);
+        item.inCart = false;
+        System.out.println("Item with ID " + item.getID() + " has been removed from your cart.");
+            return;
+    }
   
 
     public static void main(String[] args) {

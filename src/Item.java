@@ -6,7 +6,7 @@ public abstract class Item {
     protected String image;
     protected String description;
     protected String name;
-    protected int quantity;
+    protected int quantity = 1;
     protected int percent;
     public boolean onSale = false;
     public boolean inCart = false;

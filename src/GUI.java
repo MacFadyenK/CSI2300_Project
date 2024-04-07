@@ -31,10 +31,18 @@ public class GUI extends Application {
     //list for items
     ArrayList<Item> itemsForSale = new ArrayList<>();
 
+    //middle display box for the main item display area
+    VBox middleDisplay = new VBox();
+
     //instantiate shopping cart
     ShoppingCart cart = new ShoppingCart();
 
-    public void addAndShuffleSaleItems(){
+    //Add shopping cart nodes
+    Label shoppingCart = new Label("Cart:");
+    Button cartButton = new Button("0");
+
+    //adds all items to the shopping cart
+    public void addSaleItems(){
         itemsForSale.add(tshirt);
         itemsForSale.add(sweatshirt);
         itemsForSale.add(sweatpants);
@@ -44,12 +52,12 @@ public class GUI extends Application {
         itemsForSale.add(ring);
         itemsForSale.add(earrings);
         itemsForSale.add(bracelet);
-        Collections.shuffle(itemsForSale);
     }
 
     //chooses one item to be the item on sale
     public void createDiscountItem(){
         Random rand = new Random();
+        //creates a random multiple of 100 between 100 and 900, 
         int randomItem = rand.nextInt(1, 10) * 100;
         switch (randomItem){
             //IDs in 100s are rings
@@ -90,6 +98,18 @@ public class GUI extends Application {
                 break;
         }
     }
+
+    public void populateFullDisplay(){
+        Collections.shuffle(itemsForSale);
+        for(int i = 0; i<5; i++){
+            //does not display the item on sale
+            if(itemsForSale.get(i).onSale){
+                i--;
+                continue;
+            }
+            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
+        }
+    }
     
 
     @Override
@@ -100,75 +120,16 @@ public class GUI extends Application {
         //title of the stage
         primaryStage.setTitle("Shopaholic");
 
-        //initial Display area of items
-        VBox middleDisplay = new VBox();
+        //pane to combine each element for the final display
+        BorderPane border =  new BorderPane();
 
-        //put 5 items on display
-        addAndShuffleSaleItems();
-        for(int i = 0; i<5; i++){
-            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
-        }
+        //add items into the sale list
+        addSaleItems();
 
-        //Search Bar
-        HBox searchArea = new HBox(10);
+        //Display area of items
 
-        //search filter options
-        String[] categories = {"All","Jewelry", "Shoes", "Clothing"};
-
-        Label searchLbl = new Label("Search:");
-        ComboBox<String> searchBox = new ComboBox<>(FXCollections
-        .observableArrayList(categories));
-
-        searchBox.setOnAction(e -> {
-            middleDisplay.getChildren().clear();
-            String filter = searchBox.getValue();
-            switch(filter){
-                case "Jewelry":
-                    for(Item item : itemsForSale){
-                        if(item instanceof Jewelry){
-                            middleDisplay.getChildren().add(new ItemDisplay(item));
-                        }
-                    }
-                    break;
-                case "Shoes":
-                    for(Item item : itemsForSale){
-                        if(item instanceof Shoes){
-                            middleDisplay.getChildren().add(new ItemDisplay(item));
-                        }
-                    }
-                    break;
-                case "Clothing":
-                    for(Item item : itemsForSale){
-                        if(item instanceof ClothingItem){
-                            middleDisplay.getChildren().add(new ItemDisplay(item));
-                        }
-                    }
-                    break;
-                default:
-                    Collections.shuffle(itemsForSale);
-                    for(int i = 0; i<5; i++){
-                        middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
-                    }
-            }
-        });
-
-        searchArea.getChildren().addAll(searchLbl, searchBox);
-        BorderPane.setAlignment(searchLbl, Pos.CENTER);
-
-        //Shopping cart
-        HBox cartArea = new HBox(10);
-
-        Label shoppingCart = new Label("Cart:");
-        Button cartButton = new Button();
-
-        cartArea.getChildren().addAll(shoppingCart, cartButton);
-
-        //border pane creates the top bar area for the search bar and shopping cart
-        //the search bar is in the middle and the shopping cart is on the left
-        BorderPane topBar = new BorderPane();
-        topBar.setCenter(searchArea);
-        topBar.setRight(cartArea);
-        BorderPane.setAlignment(searchArea, Pos.TOP_CENTER);
+        //put 5 items on display in middle display
+        populateFullDisplay();
 
         //Discount display box on the left
         VBox discountDisplay = new VBox();
@@ -188,11 +149,23 @@ public class GUI extends Application {
                 //adds button to buy discount item
                 Button buyDealButton = new Button("Buy Now!");
                 discountDisplay.getChildren().add(buyDealButton);
-                //deal button being pressed
-                buyDealButton.setOnAction(e -> handleCartAddition(i));
-            } 
-        }
 
+                //button to remove item from cart
+                Button removeDealItem = new Button("Remove");
+
+                //deal button being pressed
+                buyDealButton.setOnAction(e -> {handleCartAddition(i);
+                    discountDisplay.getChildren().remove(buyDealButton);
+                    discountDisplay.getChildren().add(removeDealItem);
+                });
+
+                //remove button being pressed
+                removeDealItem.setOnAction(e ->{handleCartRemoval(i);
+                    discountDisplay.getChildren().remove(removeDealItem);
+                    discountDisplay.getChildren().add(buyDealButton);
+                });
+            }
+        }
         //border style for the discount display
         discountDisplay.setStyle("-fx-padding: 10;" + 
         "-fx-border-style: solid inside;" + 
@@ -201,11 +174,90 @@ public class GUI extends Application {
         "-fx-border-radius: 5;" + 
         "-fx-border-color: black;");
 
-        //pane to combine each element for the final display
-        BorderPane border =  new BorderPane();
+        border.setLeft(discountDisplay);
+
+        //Search Bar
+
+        HBox searchArea = new HBox(10);
+
+        //search filter options
+        String[] categories = {"All","Jewelry", "Shoes", "Clothing"};
+
+        Label searchLbl = new Label("Search:");
+        ComboBox<String> searchBox = new ComboBox<>(FXCollections
+        .observableArrayList(categories));
+
+        //when an option is picked in the dropdown search box
+        searchBox.setOnAction(e -> {
+            //clear the middle display
+            middleDisplay.getChildren().clear();
+            border.getChildren().remove(discountDisplay);
+            
+            String filter = searchBox.getValue();
+
+            //filters the items on display based on selected filter
+            switch(filter){
+                //filtering for Jewelry
+                case "Jewelry":
+                    for(Item item : itemsForSale){
+                        if(item instanceof Jewelry){
+                            if(item.onSale){
+                                border.setLeft(discountDisplay);
+                            } else{
+                                middleDisplay.getChildren().add(new ItemDisplay(item));
+                            }
+                        }
+                    }
+                    break;
+                //filtering for shoes
+                case "Shoes":
+                    for(Item item : itemsForSale){
+                        if(item instanceof Shoes){
+                            if(item.onSale){
+                                border.setLeft(discountDisplay);
+                            } else{
+                                middleDisplay.getChildren().add(new ItemDisplay(item));
+                            }
+                        }
+                    }
+                    break;
+                //filtering for clothing
+                case "Clothing":
+                    for(Item item : itemsForSale){
+                        if(item instanceof ClothingItem){
+                            if(item.onSale){
+                                border.setLeft(discountDisplay);
+                            } else{
+                                middleDisplay.getChildren().add(new ItemDisplay(item));
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    populateFullDisplay();
+                    border.setLeft(discountDisplay);
+                    break;
+            }
+        });
+        
+        searchArea.getChildren().addAll(searchLbl, searchBox);
+        BorderPane.setAlignment(searchLbl, Pos.CENTER);
+
+        //Shopping cart
+
+        HBox cartArea = new HBox(10);
+
+        cartArea.getChildren().addAll(shoppingCart, cartButton);
+
+        //border pane creates the top bar area for the search bar and shopping cart
+        //the search bar is in the middle and the shopping cart is on the left
+        BorderPane topBar = new BorderPane();
+        topBar.setCenter(searchArea);
+        topBar.setRight(cartArea);
+        BorderPane.setAlignment(searchArea, Pos.TOP_CENTER);
+
         border.setTop(topBar);
         border.setCenter(middleDisplay);
-        border.setLeft(discountDisplay);
 
         //scene which displays initially upon launch
         Scene mainScene = new Scene(border, 500, 500);
@@ -216,7 +268,9 @@ public class GUI extends Application {
     }
 
     public class ItemDisplay extends HBox{
+        Item itemBeingDisplayed;
         public ItemDisplay(Item item){
+            itemBeingDisplayed = item;
             //adds the item image to the display
             if(item.getImage() != null){
                 this.getChildren().add(new ImageView(new Image(item.getImage())));
@@ -231,20 +285,31 @@ public class GUI extends Application {
             //add text info to main display
             this.getChildren().add(text);
 
+            //initialized an add and remove button object
+            Button addBtn = new Button("Add to Cart");
+            Button removeBtn = new Button("Remove");
+
             //whethere item display is within the cart or not
             if(item.inCart == true){    //item display is in cart
                 //adds remove from cart button
-                Button removeBtn = new Button("Remove");
                 this.getChildren().add(removeBtn);
 
             }else{   //item display is not within the cart
                 //adds an add to cart button
-                Button addBtn = new Button("Add to Cart");
                 this.getChildren().add(addBtn);
-
-                //action taken when button clicked to add to cart
-                addBtn.setOnAction(e -> handleCartAddition(item));
             }
+
+            //action taken when remove from cart button is clicked
+            removeBtn.setOnAction(e -> {handleCartRemoval(item);
+                this.getChildren().remove(removeBtn);
+                this.getChildren().add(addBtn);
+            });
+
+            //action taken when button clicked to add to cart
+            addBtn.setOnAction(e -> {handleCartAddition(item);
+                this.getChildren().remove(addBtn);
+                this.getChildren().add(removeBtn);
+            });
 
             //when user clicks on the item display
             this.setOnMouseClicked(e -> handleItemClicked(item));
@@ -261,6 +326,7 @@ public class GUI extends Application {
 
     //handles when a button is pressed to add it to the cart.
     private void handleCartAddition(Item item){
+        //if item is already in the cart when add button is pressed
         if(item.inCart == true){
             Label alrAddedText = new Label("Item has already been added to cart.");
             Scene alrAddedPopup = new Scene(alrAddedText, 300, 100);
@@ -270,7 +336,17 @@ public class GUI extends Application {
             popupStage.show();
             return;
         }
+
+        //adds item if not in cart
         cart.addItem(item);
+        //shows how many items are in the cart
+        cartButton.setText("" + cart.getNumItems());
+    }
+
+    //handles when the remove button is pressed in the cart
+    private void handleCartRemoval(Item item){
+        cart.removeItem(item);
+        cartButton.setText("" + cart.getNumItems());
     }
 
     //handles when an item display is clicked on and changes the window to show the item more detailed
@@ -295,8 +371,20 @@ public class GUI extends Application {
         Button addToCart = new Button("Add to cart");
         itemLayout.add(addToCart, 2, 0);
 
+        //remove from cart button
+        Button removeFromCart = new Button("Remove");
+
         //when clicking the add to cart button
-        addToCart.setOnAction(e -> handleCartAddition(item));
+        addToCart.setOnAction(e -> {handleCartAddition(item);
+            itemLayout.getChildren().remove(addToCart);
+            itemLayout.add(removeFromCart, 2, 0);
+        });
+
+        //when removing item from cart
+        removeFromCart.setOnAction(e -> {handleCartRemoval(item);
+            itemLayout.getChildren().remove(removeFromCart);
+            itemLayout.add(addToCart, 2, 0);
+        });
 
         //make new stage and scene for the item details page
         Scene itemScene = new Scene(itemLayout, 500, 500);

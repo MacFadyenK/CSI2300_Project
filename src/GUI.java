@@ -1,12 +1,15 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Random;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -38,9 +41,100 @@ public class GUI extends Application {
     //instantiate shopping cart
     ShoppingCart cart = new ShoppingCart();
 
-    //Add shopping cart nodes
+    //Add shopping cart nodes so they can be used across whole class
     Label shoppingCart = new Label("Cart:");
     Button cartButton = new Button("0");
+
+    //pulls up cart window when the cart button is clicked
+    public void handleCartButtonClick(){
+        // Create a VBox to hold cart items
+        VBox cartItemsBox = new VBox(10);
+
+        // Add items from the cart to the VBox
+        for (Item item : cart.getCart()) {
+            HBox itemBox = new HBox(10);
+            Label itemLabel = new Label(item.getName());
+            Button removeButton = new Button("Remove");
+            removeButton.setOnAction(event -> {
+                // Display confirmation message for item removal
+                Alert removeAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                removeAlert.setTitle("Confirm Item Removal");
+                removeAlert.setHeaderText("Are you sure you want to remove this item?");
+                removeAlert.setContentText("This action cannot be undone.");
+
+                // Set buttons to "Yes" and "No"
+                ButtonType yesButton = new ButtonType("Yes");
+                ButtonType noButton = new ButtonType("No");
+                removeAlert.getButtonTypes().setAll(yesButton, noButton);
+
+                // Wait for user's response
+                Optional<ButtonType> result = removeAlert.showAndWait();
+                if (result.isPresent() && result.get() == yesButton) {
+                    // If user confirms, remove the item from the cart and update the view
+                    cart.removeItem(item);
+                    cartItemsBox.getChildren().remove(itemBox);
+                }
+            });
+            itemBox.getChildren().addAll(itemLabel, removeButton);
+            cartItemsBox.getChildren().add(itemBox);
+        }
+
+        // Create a label for confirmation message
+        Label confirmationLabel = new Label("");
+        confirmationLabel.setStyle("-fx-text-fill: green;");
+
+        // Create a button to trigger the purchase confirmation
+        Button buyAllButton = new Button("Buy All");
+        buyAllButton.setOnAction(e -> {
+            // Display confirmation message
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Purchase");
+            alert.setHeaderText("Are you sure you want to buy all items?");
+            alert.setContentText("This action cannot be undone.");
+
+            // Set buttons to "Yes" and "No"
+            ButtonType yesButton = new ButtonType("Yes");
+            ButtonType noButton = new ButtonType("No");
+            alert.getButtonTypes().setAll(yesButton, noButton);
+
+            // Wait for user's response
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == yesButton) {
+                // Clear the cart and update the view
+                cart.clearAll();
+                cartItemsBox.getChildren().clear();
+                confirmationLabel.setText("Purchase confirmed. Cart cleared.");
+            }
+            //shows how many items are in the cart
+            cartButton.setText("" + cart.getNumItems());
+
+            //repopulates the main screen display to reflect cart changes
+            middleDisplay.getChildren().clear();
+            for(int i = 0; i<5; i++){
+                //does not display the item on sale
+                if(itemsForSale.get(i).onSale){
+                    i--;
+                    continue;
+                }
+                middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
+            }
+        });
+
+        // Add the components to a border pane
+        BorderPane root = new BorderPane();
+        root.setCenter(cartItemsBox);
+        root.setBottom(new HBox(10, buyAllButton, confirmationLabel));
+        BorderPane.setAlignment(cartItemsBox, Pos.CENTER);
+        BorderPane.setAlignment(buyAllButton, Pos.CENTER);
+        BorderPane.setAlignment(confirmationLabel, Pos.CENTER);
+
+         // Set up the scene and stage
+         Scene scene = new Scene(root, 400, 300);
+         Stage cartStage = new Stage();
+         cartStage.setTitle("Shopping Cart Confirmation");
+         cartStage.setScene(scene);
+         cartStage.show();
+    }
 
     //adds all items to the shopping cart
     public void addSaleItems(){
@@ -253,6 +347,9 @@ public class GUI extends Application {
         //Shopping cart
 
         HBox cartArea = new HBox(10);
+
+        //sets the action upon cart button click
+        cartButton.setOnAction(e -> handleCartButtonClick());
 
         cartArea.getChildren().addAll(shoppingCart, cartButton);
 

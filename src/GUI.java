@@ -35,8 +35,14 @@ public class GUI extends Application {
     //list for items
     ArrayList<Item> itemsForSale = new ArrayList<>();
 
+    //pane to combine each element for the final display
+    BorderPane border =  new BorderPane();
+
     //middle display box for the main item display area
     VBox middleDisplay = new VBox();
+
+    //Discount display box on the left
+    VBox discountDisplay = new VBox();
 
     //instantiate shopping cart
     ShoppingCart cart = new ShoppingCart();
@@ -44,6 +50,13 @@ public class GUI extends Application {
     //Add shopping cart nodes so they can be used across whole class
     Label shoppingCart = new Label("Cart:");
     Button cartButton = new Button("0");
+
+    //search filter options
+    String[] categories = {"All","Jewelry", "Shoes", "Clothing"};
+
+    Label searchLbl = new Label("Search:");
+    ComboBox<String> searchBox = new ComboBox<>(FXCollections
+    .observableArrayList(categories));
 
     //pulls up cart window when the cart button is clicked
     public void handleCartButtonClick(){
@@ -118,6 +131,12 @@ public class GUI extends Application {
                 }
                 middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
             }
+            //repopulate discount display
+            discountDisplay.getChildren().clear();
+            createDiscountDisplay();
+
+            //sets the search bar to display all
+            searchBox.getSelectionModel().select(0);
         });
 
         // Add the components to a border pane
@@ -193,41 +212,7 @@ public class GUI extends Application {
                 break;
         }
     }
-
-    public void populateFullDisplay(){
-        Collections.shuffle(itemsForSale);
-        for(int i = 0; i<5; i++){
-            //does not display the item on sale
-            if(itemsForSale.get(i).onSale){
-                i--;
-                continue;
-            }
-            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
-        }
-    }
-    
-
-    @Override
-    public void start(Stage primaryStage){
-        //discounts an item upon start
-        createDiscountItem();
-
-        //title of the stage
-        primaryStage.setTitle("Shopaholic");
-
-        //pane to combine each element for the final display
-        BorderPane border =  new BorderPane();
-
-        //add items into the sale list
-        addSaleItems();
-
-        //Display area of items
-
-        //put 5 items on display in middle display
-        populateFullDisplay();
-
-        //Discount display box on the left
-        VBox discountDisplay = new VBox();
+    public void createDiscountDisplay(){
         discountDisplay.getChildren().add(new Label("Discount!"));
         //finds sale item from all possible items
         for(Item i : itemsForSale){
@@ -274,16 +259,43 @@ public class GUI extends Application {
 
         border.setLeft(discountDisplay);
 
+    }
+
+    public void populateFullDisplay(){
+        Collections.shuffle(itemsForSale);
+        for(int i = 0; i<5; i++){
+            //does not display the item on sale
+            if(itemsForSale.get(i).onSale){
+                i--;
+                continue;
+            }
+            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
+        }
+    }
+    
+
+    @Override
+    public void start(Stage primaryStage){
+        //discounts an item upon start
+        createDiscountItem();
+
+        //title of the stage
+        primaryStage.setTitle("Shopaholic");
+
+        //add items into the sale list
+        addSaleItems();
+
+        //Display area of items
+
+        //put 5 items on display in middle display
+        populateFullDisplay();
+
+        //create discount display
+        createDiscountDisplay();
+        
         //Search Bar
 
         HBox searchArea = new HBox(10);
-
-        //search filter options
-        String[] categories = {"All","Jewelry", "Shoes", "Clothing"};
-
-        Label searchLbl = new Label("Search:");
-        ComboBox<String> searchBox = new ComboBox<>(FXCollections
-        .observableArrayList(categories));
 
         //when an option is picked in the dropdown search box
         searchBox.setOnAction(e -> {
@@ -490,7 +502,7 @@ public class GUI extends Application {
         HBox dropdowns = new HBox(10);
 
         Label qtyLabel = new Label("Quantity:");
-        TextField quantityField = new TextField("1");
+        TextField quantityField = new TextField(""+item.getQuantity());
         //only allows integer values to be input into text field
         quantityField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!isValidInt(newValue)) {
@@ -502,26 +514,30 @@ public class GUI extends Application {
         Label sizeLabel = new Label("Size:");
         ComboBox<String> sizeBox = new ComboBox<>(FXCollections
         .observableArrayList(sizes));
-        sizeBox.getSelectionModel().select(0);
+        sizeBox.getSelectionModel().select(item.getSize());
 
         //color selector
         Label colorLabel = new Label("Color:");
         ComboBox<String> colorBox = new ComboBox<>(FXCollections
         .observableArrayList(colors));
-        colorBox.getSelectionModel().select(0);
+        
 
         //metal type selector
         Label metalLabel = new Label("Metal:");
         ComboBox<String> metalTypeBox = new ComboBox<>(FXCollections
         .observableArrayList(metalTypes));
-        metalTypeBox.getSelectionModel().select(0);
 
         //add each element to dropdowns area
         dropdowns.getChildren().addAll(qtyLabel, quantityField, sizeLabel, sizeBox);
         if(item instanceof Jewelry){
             dropdowns.getChildren().addAll(metalLabel, metalTypeBox);
+            metalTypeBox.getSelectionModel().select(((Jewelry) item).getMetalType());  //sets dropdown value
+        }else if(item instanceof ClothingItem){
+            dropdowns.getChildren().addAll(colorLabel, colorBox);
+            colorBox.getSelectionModel().select(((ClothingItem) item).getColor());  //sets dropdown value
         }else{
             dropdowns.getChildren().addAll(colorLabel, colorBox);
+            colorBox.getSelectionModel().select(((Shoes) item).getColor());  //sets dropdown value
         }
 
         //add dropdowns to text area
@@ -551,15 +567,12 @@ public class GUI extends Application {
             }catch(NumberFormatException ex){
                 item.setQuantity(1);
             }
-            System.out.println(item.getQuantity());
 
             //sets the color/metaltype of the item
             if(item instanceof ClothingItem){
                 ((ClothingItem) item).setColor(colorBox.getValue());
-                System.out.println(((ClothingItem) item).getColor());
             }else if (item instanceof Shoes){
                 ((Shoes) item).setColor(colorBox.getValue());
-                System.out.println(((Shoes) item).getColor());
             }else{
                 ((Jewelry) item).setMetalType(metalTypeBox.getValue());
             }

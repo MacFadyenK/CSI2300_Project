@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+
 public class GUI extends Application {
     //initial items for sale
     TShirt tshirt = new TShirt("T-Shirt", 20.00, "A basic t-shirt");

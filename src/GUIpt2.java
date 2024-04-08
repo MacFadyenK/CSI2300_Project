@@ -21,6 +21,10 @@ public class GUIpt2 extends Application {
     public void start(Stage primaryStage) {
         // Create a VBox to hold cart items
         VBox cartItemsBox = new VBox(10);
+        Earrings earrings = new Earrings("Hoop earring", 49.99, "12mm diameter hoop earring set");
+        Bracelet bracelet = new Bracelet("Gold Clasp Bracelet", 69.99, "Gold bracelet with an easy use clasp");
+        cartItems.add(earrings);
+        cartItems.add(bracelet);
 
         // Create a button to view the cart
         Button viewCartButton = new Button("View Cart");

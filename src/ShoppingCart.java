@@ -61,6 +61,14 @@ public class ShoppingCart {
         System.out.println("Item with ID " + item.getID() + " has been removed from your cart.");
             return;
     }
+
+    //clear all items in cart
+    public void clearAll(){
+        for(Item i : items){
+            i.inCart = false;
+        }
+        items.clear();
+    }
   
 
     public static void main(String[] args) {

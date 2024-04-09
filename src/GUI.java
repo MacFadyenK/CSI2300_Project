@@ -285,7 +285,10 @@ public class GUI extends Application {
                 //adds image of item
                 if(i.getImage() != null){
                     try {  //tries to add image with link
-                        discountDisplay.getChildren().add(new ImageView(new Image(i.getImage())));
+                        ImageView imageView = new ImageView(new Image(i.getImage()));
+                        discountDisplay.getChildren().add(imageView);
+                        imageView.setFitHeight(75); 
+                        imageView.setFitWidth(75);
                     } catch (IllegalArgumentException e) {  //if image link doesnt work
                        System.out.println("Image could not be loaded");
                     }
@@ -462,7 +465,10 @@ public class GUI extends Application {
             //adds the item image to the display
             if(item.getImage() != null){
                 try { //tries to add image with image link
-                    this.getChildren().add(new ImageView(new Image(item.getImage())));
+                    ImageView imageView = new ImageView(new Image(item.getImage()));
+                    this.getChildren().add(imageView);
+                    imageView.setFitHeight(60); 
+                    imageView.setFitWidth(60);
                 } catch (IllegalArgumentException e) {  //if image link doesnt work
                     System.out.println("Image could not be loaded");
                 }
@@ -563,16 +569,18 @@ public class GUI extends Application {
     //handles when an item display is clicked on and changes the window to show the item more detailed
     private void handleItemClicked(Item item) {
         GridPane itemLayout = new GridPane();
+        itemLayout.setHgap(15);
 
         //shows item image
         if(item.getImage() != null){
             try{  //tries to add image
-                itemLayout.add(new ImageView(new Image(item.getImage())), 0, 0);
+                ImageView imageView = new ImageView(new Image(item.getImage()));
+                itemLayout.add(imageView, 0, 0);
+                imageView.setFitHeight(175); 
+                imageView.setFitWidth(175);
             }catch(IllegalArgumentException e){  //if link to image does not work
                 System.out.println("Image could not be loaded");
             }
-            
-            itemLayout.add(new ImageView(new Image(item.getImage())), 0, 0);
         }
         //box for item details
         VBox text = new VBox();
@@ -580,8 +588,6 @@ public class GUI extends Application {
         text.getChildren().add(new Label("$"+String.format("%.2f", item.getPrice())));
         text.getChildren().add(new Label(item.getDescription()));
         
-        //quantity, size, and color dropdowns
-        HBox dropdowns = new HBox(10);
 
         Label qtyLabel = new Label("Quantity:");
         TextField quantityField = new TextField(""+item.getQuantity());
@@ -610,20 +616,17 @@ public class GUI extends Application {
         .observableArrayList(metalTypes));
 
         //add each element to dropdowns area
-        dropdowns.getChildren().addAll(qtyLabel, quantityField, sizeLabel, sizeBox);
+        text.getChildren().addAll(qtyLabel, quantityField, sizeLabel, sizeBox);
         if(item instanceof Jewelry){
-            dropdowns.getChildren().addAll(metalLabel, metalTypeBox);
+            text.getChildren().addAll(metalLabel, metalTypeBox);
             metalTypeBox.getSelectionModel().select(((Jewelry) item).getMetalType());  //sets dropdown value
         }else if(item instanceof ClothingItem){
-            dropdowns.getChildren().addAll(colorLabel, colorBox);
+            text.getChildren().addAll(colorLabel, colorBox);
             colorBox.getSelectionModel().select(((ClothingItem) item).getColor());  //sets dropdown value
         }else{
-            dropdowns.getChildren().addAll(colorLabel, colorBox);
+            text.getChildren().addAll(colorLabel, colorBox);
             colorBox.getSelectionModel().select(((Shoes) item).getColor());  //sets dropdown value
         }
-
-        //add dropdowns to text area
-        text.getChildren().add(dropdowns);
 
         itemLayout.add(text, 1, 0);
 

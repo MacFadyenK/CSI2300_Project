@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
@@ -58,6 +59,61 @@ public class GUI extends Application {
     Label searchLbl = new Label("Search:");
     ComboBox<String> searchBox = new ComboBox<>(FXCollections
     .observableArrayList(categories));
+
+    //add images
+    public void setImages(){
+        // Get the project directory
+        String projectDirectory = System.getProperty("user.dir");
+        System.out.println(projectDirectory);
+
+        //tshirt
+        // Construct relative paths within the project folder
+        String relativeFilePath = "images\\TShirt.jpg";
+        // Construct the absolute path by concatenating project directory and relative path
+        String absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        tshirt.addImage(absoluteFilePath);
+
+        //sweatshirt
+        relativeFilePath = "images\\Sweatshirt.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        System.out.println(absoluteFilePath);
+        sweatshirt.addImage(absoluteFilePath);
+
+        //sweatpants
+        relativeFilePath = "images\\Sweatpants.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        sweatpants.addImage(absoluteFilePath);
+
+        //tennis shoes
+        relativeFilePath = "images\\TennisShoes.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        tennisshoes.addImage(absoluteFilePath);
+
+        //slides
+        relativeFilePath = "images\\Slides.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        slides.addImage(absoluteFilePath);
+
+        //dress shoes
+        relativeFilePath = "images\\DressShoes.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        dressshoes.addImage(absoluteFilePath);
+
+        //ring
+        relativeFilePath = "images\\DiamondRing.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        ring.addImage(absoluteFilePath);
+
+        //earrings
+        relativeFilePath = "images\\HoopEarrings.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        earrings.addImage(absoluteFilePath);
+
+        //bracelet
+        relativeFilePath = "images\\Bracelet.jpg";
+        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
+        bracelet.addImage(absoluteFilePath);
+    }
 
     //pulls up cart window when the cart button is clicked
     public void handleCartButtonClick(){
@@ -294,6 +350,9 @@ public class GUI extends Application {
         //add items into the sale list
         addSaleItems();
 
+        //set the image paths for each item
+        setImages();
+
         //Display area of items
 
         //put 5 items on display in middle display
@@ -394,7 +453,7 @@ public class GUI extends Application {
 
     public class ItemDisplay extends HBox{
         Item itemBeingDisplayed;
-        public ItemDisplay(Item item){
+        public ItemDisplay(Item item) {
             itemBeingDisplayed = item;
             //adds the item image to the display
             if(item.getImage() != null){

@@ -33,7 +33,7 @@ public class GUI extends Application {
     DressShoes dressshoes = new DressShoes("Dress Shoes", 110.00, "Real leather dress shoes");
     Ring ring = new Ring("Diamond Ring", 3500.00, "1 carat diamond ring");
     Earrings earrings = new Earrings("Hoop earring", 49.99, "12mm diameter hoop earring set");
-    Bracelet bracelet = new Bracelet("Gold Clasp Bracelet", 69.99, "Gold bracelet with an easy use clasp");
+    Bracelet bracelet = new Bracelet("Clasp Bracelet", 69.99, "Gold bracelet with an easy use clasp");
     //list for items
     ArrayList<Item> itemsForSale = new ArrayList<>();
 

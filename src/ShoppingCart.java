@@ -29,6 +29,14 @@ public class ShoppingCart {
         return items;
     }
 
+    //gets the total cost of the cart
+    public double getTotalCost(){
+        double totalCost = 0.00;
+        for(Item i : items){
+            totalCost += i.getQuantity() * i.getPrice();
+        }
+        return totalCost;
+    }
 
     // Method to display the items in the cart
     public void displayCart() {

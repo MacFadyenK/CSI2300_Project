@@ -284,7 +284,11 @@ public class GUI extends Application {
             if(i.onSale == true){
                 //adds image of item
                 if(i.getImage() != null){
-                    discountDisplay.getChildren().add(new ImageView(new Image(i.getImage())));
+                    try {  //tries to add image with link
+                        discountDisplay.getChildren().add(new ImageView(new Image(i.getImage())));
+                    } catch (IllegalArgumentException e) {  //if image link doesnt work
+                       System.out.println("Image could not be loaded");
+                    }
                 }
                 //adds name and price and percent discount
                 discountDisplay.getChildren().addAll(new Label(i.getName()), 
@@ -457,7 +461,11 @@ public class GUI extends Application {
             itemBeingDisplayed = item;
             //adds the item image to the display
             if(item.getImage() != null){
-                this.getChildren().add(new ImageView(new Image(item.getImage())));
+                try { //tries to add image with image link
+                    this.getChildren().add(new ImageView(new Image(item.getImage())));
+                } catch (IllegalArgumentException e) {  //if image link doesnt work
+                    System.out.println("Image could not be loaded");
+                }
             }
 
             //VBox for text info
@@ -558,6 +566,12 @@ public class GUI extends Application {
 
         //shows item image
         if(item.getImage() != null){
+            try{  //tries to add image
+                itemLayout.add(new ImageView(new Image(item.getImage())), 0, 0);
+            }catch(IllegalArgumentException e){  //if link to image does not work
+                System.out.println("Image could not be loaded");
+            }
+            
             itemLayout.add(new ImageView(new Image(item.getImage())), 0, 0);
         }
         //box for item details

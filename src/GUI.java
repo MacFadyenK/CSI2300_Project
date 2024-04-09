@@ -64,10 +64,15 @@ public class GUI extends Application {
         // Create a VBox to hold cart items
         VBox cartItemsBox = new VBox(10);
 
+        //total cost label in the items box
+        Label totalCostLabel = new Label("Total Cost: $"+ String.format("%.2f", cart.getTotalCost()));
+        cartItemsBox.getChildren().add(totalCostLabel);
+
         // Add items from the cart to the VBox
         for (Item item : cart.getCart()) {
             HBox itemBox = new HBox(10);
             Label itemLabel = new Label(item.getName());
+            Label quantityLabel = new Label("Quantity: "+ item.getQuantity());
             Button removeButton = new Button("Remove");
             removeButton.setOnAction(event -> {
                 // Display confirmation message for item removal
@@ -86,10 +91,12 @@ public class GUI extends Application {
                 if (result.isPresent() && result.get() == yesButton) {
                     // If user confirms, remove the item from the cart and update the view
                     cart.removeItem(item);
+                    cartButton.setText("" + cart.getNumItems());
                     cartItemsBox.getChildren().remove(itemBox);
+                    totalCostLabel.setText("Total Cost: $"+ String.format("%.2f", cart.getTotalCost()));
                 }
             });
-            itemBox.getChildren().addAll(itemLabel, removeButton);
+            itemBox.getChildren().addAll(itemLabel, quantityLabel, removeButton);
             cartItemsBox.getChildren().add(itemBox);
         }
 
@@ -117,6 +124,7 @@ public class GUI extends Application {
                 // Clear the cart and update the view
                 cart.clearAll();
                 cartItemsBox.getChildren().clear();
+                totalCostLabel.setText("Total Cost: $0.00");
                 confirmationLabel.setText("Purchase confirmed. Cart cleared.");
             }
             //shows how many items are in the cart

@@ -56,11 +56,12 @@ public class GUI extends Application {
     //search filter options
     String[] categories = {"All","Jewelry", "Shoes", "Clothing"};
 
+    //search label and search box creation
     Label searchLbl = new Label("Search:");
     ComboBox<String> searchBox = new ComboBox<>(FXCollections
     .observableArrayList(categories));
 
-    //add images
+    //add image paths into the item objects
     public void setImages(){
         // Get the project directory
         String projectDirectory = System.getProperty("user.dir");
@@ -128,8 +129,22 @@ public class GUI extends Application {
         for (Item item : cart.getCart()) {
             HBox itemBox = new HBox(10);
             Label itemLabel = new Label(item.getName());
+            Label priceLabel = new Label("$"+ String.format("%.2f", (item.getPrice()*item.getQuantity())));
             Label quantityLabel = new Label("Quantity: "+ item.getQuantity());
+            Label sizeLabel = new Label("Size: " + item.getSize());
+            Label typeLabel = new Label();
+            //puts color/metal type as text in label
+            if(item instanceof Jewelry){
+                typeLabel.setText("Type: " + ((Jewelry) item).getMetalType());
+            }else if( item instanceof ClothingItem){
+                typeLabel.setText("Type: " + ((ClothingItem) item).getColor());
+            }else{
+                typeLabel.setText("Type: " + ((Shoes) item).getColor());
+            }
+            
             Button removeButton = new Button("Remove");
+            
+            //when remove button is clicked
             removeButton.setOnAction(event -> {
                 // Display confirmation message for item removal
                 Alert removeAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -152,7 +167,7 @@ public class GUI extends Application {
                     totalCostLabel.setText("Total Cost: $"+ String.format("%.2f", cart.getTotalCost()));
                 }
             });
-            itemBox.getChildren().addAll(itemLabel, quantityLabel, removeButton);
+            itemBox.getChildren().addAll(itemLabel, priceLabel, quantityLabel, sizeLabel, typeLabel, removeButton);
             cartItemsBox.getChildren().add(itemBox);
         }
 

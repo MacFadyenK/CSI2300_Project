@@ -60,12 +60,16 @@ public class GUI extends Application {
     Label searchLbl = new Label("Search:");
     ComboBox<String> searchBox = new ComboBox<>(FXCollections
     .observableArrayList(categories));
+    //variable to keep track of which item screen is currently showing
+    //0 for all, 1 for jewelry, 2 for shoes, and 3 for clothing
+    int displayType = 0;
+
+
 
     //add image paths into the item objects
     public void setImages(){
         // Get the project directory
         String projectDirectory = System.getProperty("user.dir");
-        System.out.println(projectDirectory);
 
         //tshirt
         // Construct relative paths within the project folder
@@ -77,7 +81,6 @@ public class GUI extends Application {
         //sweatshirt
         relativeFilePath = "images\\Sweatshirt.jpg";
         absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        System.out.println(absoluteFilePath);
         sweatshirt.addImage(absoluteFilePath);
 
         //sweatpants
@@ -116,6 +119,8 @@ public class GUI extends Application {
         bracelet.addImage(absoluteFilePath);
     }
 
+
+
     //pulls up cart window when the cart button is clicked
     public void handleCartButtonClick(){
         // Create a VBox to hold cart items
@@ -128,6 +133,7 @@ public class GUI extends Application {
         // Add items from the cart to the VBox
         for (Item item : cart.getCart()) {
             HBox itemBox = new HBox(10);
+            //item details displayed
             Label itemLabel = new Label(item.getName());
             Label priceLabel = new Label("$"+ String.format("%.2f", (item.getPrice()*item.getQuantity())));
             Label quantityLabel = new Label("Quantity: "+ item.getQuantity());
@@ -165,6 +171,7 @@ public class GUI extends Application {
                     cartButton.setText("" + cart.getNumItems());
                     cartItemsBox.getChildren().remove(itemBox);
                     totalCostLabel.setText("Total Cost: $"+ String.format("%.2f", cart.getTotalCost()));
+                    reloadMainPage();
                 }
             });
             itemBox.getChildren().addAll(itemLabel, priceLabel, quantityLabel, sizeLabel, typeLabel, removeButton);
@@ -197,26 +204,22 @@ public class GUI extends Application {
                 cartItemsBox.getChildren().clear();
                 totalCostLabel.setText("Total Cost: $0.00");
                 confirmationLabel.setText("Purchase confirmed. Cart cleared.");
-            }
-            //shows how many items are in the cart
-            cartButton.setText("" + cart.getNumItems());
+                //shows how many items are in the cart
+                cartButton.setText("" + cart.getNumItems());
 
-            //repopulates the main screen display to reflect cart changes
-            middleDisplay.getChildren().clear();
-            for(int i = 0; i<5; i++){
-                //does not display the item on sale
-                if(itemsForSale.get(i).onSale){
-                    i--;
-                    continue;
-                }
-                middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
-            }
-            //repopulate discount display
-            discountDisplay.getChildren().clear();
-            createDiscountDisplay();
+                //repopulates the main screen display to reflect cart changes
+                middleDisplay.getChildren().clear();
+                //shuffles display order
+                Collections.shuffle(itemsForSale);
+                populateFullDisplay();
 
-            //sets the search bar to display all
-            searchBox.getSelectionModel().select(0);
+                //repopulate discount display
+                discountDisplay.getChildren().clear();
+                createDiscountDisplay();
+
+                //sets the search bar to display all
+                searchBox.getSelectionModel().select(0);
+            }
         });
 
         // Add the components to a border pane
@@ -235,6 +238,8 @@ public class GUI extends Application {
          cartStage.show();
     }
 
+
+
     //adds all items to the shopping cart
     public void addSaleItems(){
         itemsForSale.add(tshirt);
@@ -247,6 +252,8 @@ public class GUI extends Application {
         itemsForSale.add(earrings);
         itemsForSale.add(bracelet);
     }
+
+
 
     //chooses one item to be the item on sale
     public void createDiscountItem(){
@@ -292,6 +299,10 @@ public class GUI extends Application {
                 break;
         }
     }
+
+
+
+    //makes a discount display layout with the on sale item
     public void createDiscountDisplay(){
         discountDisplay.getChildren().add(new Label("Discount!"));
         //finds sale item from all possible items
@@ -315,19 +326,26 @@ public class GUI extends Application {
                 
                 //adds button to buy discount item
                 Button buyDealButton = new Button("Buy Now!");
-                discountDisplay.getChildren().add(buyDealButton);
 
                 //button to remove item from cart
                 Button removeDealItem = new Button("Remove");
 
+                //adds in a button whether item is in cart or not in cart
+                if(!i.inCart){  //buy button if not in cart
+                    discountDisplay.getChildren().add(buyDealButton);
+                }else{  //remove button if in cart
+                    discountDisplay.getChildren().add(removeDealItem);
+                }
                 //deal button being pressed
                 buyDealButton.setOnAction(e -> {handleCartAddition(i);
+                    //switches button type
                     discountDisplay.getChildren().remove(buyDealButton);
                     discountDisplay.getChildren().add(removeDealItem);
                 });
 
                 //remove button being pressed
                 removeDealItem.setOnAction(e ->{handleCartRemoval(i);
+                    //switches button type
                     discountDisplay.getChildren().remove(removeDealItem);
                     discountDisplay.getChildren().add(buyDealButton);
                 });
@@ -343,24 +361,101 @@ public class GUI extends Application {
         "-fx-border-insets: 5;" + 
         "-fx-border-radius: 5;" + 
         "-fx-border-color: black;");
-
-        border.setLeft(discountDisplay);
-
     }
 
+
+
+    //populates the main display with 5 regular price items
     public void populateFullDisplay(){
-        Collections.shuffle(itemsForSale);
-        for(int i = 0; i<5; i++){
-            //does not display the item on sale
-            if(itemsForSale.get(i).onSale){
-                i--;
-                continue;
+        int itemsAdded = 0;
+        //adds 5 items to the display if they are not on sale
+        for (int i = 0; i < itemsForSale.size() && itemsAdded < 5; i++) {
+            if (!itemsForSale.get(i).onSale) {
+                middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
+                itemsAdded++;
             }
-            middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
         }
     }
     
 
+
+    //sets the display to only jewelry items
+    public void displayAllJewelry(){
+        for(Item item : itemsForSale){
+            if(item instanceof Jewelry){
+                if(item.onSale){
+                    border.setLeft(discountDisplay);
+                } else{
+                    middleDisplay.getChildren().add(new ItemDisplay(item));
+                }
+            }
+        }
+    }
+
+
+
+    //displays on main screen all shoe items
+    public void displayAllShoes(){
+        for(Item item : itemsForSale){
+            if(item instanceof Shoes){
+                if(item.onSale){
+                    border.setLeft(discountDisplay);
+                } else{
+                    middleDisplay.getChildren().add(new ItemDisplay(item));
+                }
+            }
+        }
+    }
+    
+
+
+    //displays on main screen all clothing items
+    public void displayAllClothing(){
+        for(Item item : itemsForSale){
+            if(item instanceof ClothingItem){
+                if(item.onSale){
+                    border.setLeft(discountDisplay);
+                } else{
+                    middleDisplay.getChildren().add(new ItemDisplay(item));
+                }
+            }
+        }
+    }
+
+
+
+    //reloads info currently being displayed on the main screen
+    public void reloadMainPage(){
+        //clears page
+        middleDisplay.getChildren().clear();
+        discountDisplay.getChildren().clear();
+        createDiscountDisplay();
+
+        //reloads items based on which display was currently showing
+        switch(displayType) {
+            //if displaying all items
+            case 0:
+                populateFullDisplay();
+                border.setLeft(discountDisplay);
+                break;
+            //if displaying only jewelry
+            case 1:
+                displayAllJewelry();
+                break;
+            //if displaying only shoes
+            case 2:
+                displayAllShoes();
+                break;
+            //if displaying only clothing
+            case 3:
+                displayAllClothing();
+                break;
+        }
+    }
+
+
+
+    //run upon launch
     @Override
     public void start(Stage primaryStage){
         //discounts an item upon start
@@ -375,17 +470,18 @@ public class GUI extends Application {
         //set the image paths for each item
         setImages();
 
-        //Display area of items
-
-        //put 5 items on display in middle display
+        //put 5 random items on display in middle display
+        Collections.shuffle(itemsForSale);
         populateFullDisplay();
 
         //create discount display
         createDiscountDisplay();
+        border.setLeft(discountDisplay);
         
-        //Search Bar
-
+        //Search Bar area
         HBox searchArea = new HBox(10);
+        searchArea.getChildren().addAll(searchLbl, searchBox);
+        BorderPane.setAlignment(searchLbl, Pos.CENTER);
 
         //when an option is picked in the dropdown search box
         searchBox.setOnAction(e -> {
@@ -399,61 +495,35 @@ public class GUI extends Application {
             switch(filter){
                 //filtering for Jewelry
                 case "Jewelry":
-                    for(Item item : itemsForSale){
-                        if(item instanceof Jewelry){
-                            if(item.onSale){
-                                border.setLeft(discountDisplay);
-                            } else{
-                                middleDisplay.getChildren().add(new ItemDisplay(item));
-                            }
-                        }
-                    }
+                    displayType = 1;
+                    displayAllJewelry();
                     break;
                 //filtering for shoes
                 case "Shoes":
-                    for(Item item : itemsForSale){
-                        if(item instanceof Shoes){
-                            if(item.onSale){
-                                border.setLeft(discountDisplay);
-                            } else{
-                                middleDisplay.getChildren().add(new ItemDisplay(item));
-                            }
-                        }
-                    }
+                    displayType = 2;
+                    displayAllShoes();
                     break;
                 //filtering for clothing
                 case "Clothing":
-                    for(Item item : itemsForSale){
-                        if(item instanceof ClothingItem){
-                            if(item.onSale){
-                                border.setLeft(discountDisplay);
-                            } else{
-                                middleDisplay.getChildren().add(new ItemDisplay(item));
-                            }
-                        }
-                    }
+                    displayType = 3;
+                    displayAllClothing();
                     break;
                 default:
-                    Collections.shuffle(itemsForSale);
-                    for(int i = 0; i<5; i++){
-                        middleDisplay.getChildren().add(new ItemDisplay(itemsForSale.get(i)));
-                    }
+                    displayType = 0;
                     border.setLeft(discountDisplay);
+                    //shuffles display order
+                    Collections.shuffle(itemsForSale);
+                    populateFullDisplay();
                     break;
             }
         });
-        
-        searchArea.getChildren().addAll(searchLbl, searchBox);
-        BorderPane.setAlignment(searchLbl, Pos.CENTER);
 
-        //Shopping cart
-
+        //Shopping cart area
         HBox cartArea = new HBox(10);
+        cartArea.getChildren().addAll(shoppingCart, cartButton);
 
         //sets the action upon cart button click
         cartButton.setOnAction(e -> handleCartButtonClick());
-
-        cartArea.getChildren().addAll(shoppingCart, cartButton);
 
         //border pane creates the top bar area for the search bar and shopping cart
         //the search bar is in the middle and the shopping cart is on the left
@@ -473,10 +543,12 @@ public class GUI extends Application {
         primaryStage.show();
     }
 
+
+
+    //inner class creates an object that displays an item and its cursory information
     public class ItemDisplay extends HBox{
-        Item itemBeingDisplayed;
+        //itemDisplay constructor
         public ItemDisplay(Item item) {
-            itemBeingDisplayed = item;
             //adds the item image to the display
             if(item.getImage() != null){
                 try { //tries to add image with image link
@@ -489,7 +561,7 @@ public class GUI extends Application {
                 }
             }
 
-            //VBox for text info
+            //VBox for text info: name, price, and description
             VBox text = new VBox();
             text.getChildren().add(new Label(item.getName()));
             text.getChildren().add(new Label("$"+String.format("%.2f", item.getPrice())));
@@ -502,7 +574,7 @@ public class GUI extends Application {
             Button addBtn = new Button("Add to Cart");
             Button removeBtn = new Button("Remove");
 
-            //whethere item display is within the cart or not
+            //whether item being displayed is within the cart or not
             if(item.inCart == true){    //item display is in cart
                 //adds remove from cart button
                 this.getChildren().add(removeBtn);
@@ -537,24 +609,17 @@ public class GUI extends Application {
         }
     }
 
+
+
     //handles when a button is pressed to add it to the cart.
     private void handleCartAddition(Item item){
-        //if item is already in the cart when add button is pressed
-        if(item.inCart == true){
-            Label alrAddedText = new Label("Item has already been added to cart.");
-            Scene alrAddedPopup = new Scene(alrAddedText, 300, 100);
-            Stage popupStage = new Stage();
-            popupStage.setTitle("Warning");
-            popupStage.setScene(alrAddedPopup);
-            popupStage.show();
-            return;
-        }
-
-        //adds item if not in cart
+        //adds item to cart
         cart.addItem(item);
         //shows how many items are in the cart
         cartButton.setText("" + cart.getNumItems());
     }
+
+
 
     //handles when the remove button is pressed in the cart
     private void handleCartRemoval(Item item){
@@ -562,10 +627,14 @@ public class GUI extends Application {
         cartButton.setText("" + cart.getNumItems());
     }
 
+
+
     //arrays for item detail dropdowns
     String[] metalTypes = {"Gold", "Silver", "Rose Gold", "Platinum", "Tungsten"};
     String[] colors = {"White", "Black", "Gray", "Red", "Pink", "Blue", "Green", "Yellow", "Orange"};
     String[] sizes = {"S", "M", "L", "XL"};
+
+
 
     //checks if string is an integer
     private boolean isValidInt(String text) {
@@ -580,6 +649,8 @@ public class GUI extends Application {
             return false;
         }
     }
+
+
 
     //handles when an item display is clicked on and changes the window to show the item more detailed
     private void handleItemClicked(Item item) {
@@ -597,13 +668,13 @@ public class GUI extends Application {
                 System.out.println("Image could not be loaded");
             }
         }
-        //box for item details
+        //box for item details: name, price, description, quantity, size, and color/metal type
         VBox text = new VBox();
         text.getChildren().add(new Label(item.getName()));
         text.getChildren().add(new Label("$"+String.format("%.2f", item.getPrice())));
         text.getChildren().add(new Label(item.getDescription()));
         
-
+        //label and textfield for desired quantity
         Label qtyLabel = new Label("Quantity:");
         TextField quantityField = new TextField(""+item.getQuantity());
         //only allows integer values to be input into text field
@@ -624,13 +695,12 @@ public class GUI extends Application {
         ComboBox<String> colorBox = new ComboBox<>(FXCollections
         .observableArrayList(colors));
         
-
         //metal type selector
         Label metalLabel = new Label("Metal:");
         ComboBox<String> metalTypeBox = new ComboBox<>(FXCollections
         .observableArrayList(metalTypes));
 
-        //add each element to dropdowns area
+        //add each element ( quantity, size, and color/metal) to text area
         text.getChildren().addAll(qtyLabel, quantityField, sizeLabel, sizeBox);
         if(item instanceof Jewelry){
             text.getChildren().addAll(metalLabel, metalTypeBox);
@@ -643,6 +713,7 @@ public class GUI extends Application {
             colorBox.getSelectionModel().select(((Shoes) item).getColor());  //sets dropdown value
         }
 
+        //adds text to middle section of the grid layout
         itemLayout.add(text, 1, 0);
 
         //add to cart button
@@ -650,21 +721,24 @@ public class GUI extends Application {
 
         //remove from cart button
         Button removeFromCart = new Button("Remove");
-        if(!item.inCart){
+
+        //adds the correct button to the display
+        if(!item.inCart){  //add button if item isnt in cart
             itemLayout.add(addToCart, 2, 0);
-        }else{
+        }else{  //remove button if item is in cart
             itemLayout.add(removeFromCart, 2, 0);
         }
 
         //when clicking the add to cart button
         addToCart.setOnAction(e -> {
+            //change buttons
             itemLayout.getChildren().remove(addToCart);
             itemLayout.add(removeFromCart, 2, 0);
 
             //sets the quantity of the item
             try{
                 item.setQuantity(Integer.parseInt(quantityField.getText()));
-            }catch(NumberFormatException ex){
+            }catch(NumberFormatException ex){  //for blank textfield
                 item.setQuantity(1);
             }
 
@@ -681,12 +755,18 @@ public class GUI extends Application {
             item.setSize(sizeBox.getValue());
 
             handleCartAddition(item);
+
+            //reload the main page
+            reloadMainPage();
         });
 
         //when removing item from cart
         removeFromCart.setOnAction(e -> {handleCartRemoval(item);
+            //change buttons
             itemLayout.getChildren().remove(removeFromCart);
             itemLayout.add(addToCart, 2, 0);
+            //reload page
+            reloadMainPage();
         });
 
         //make new stage and scene for the item details page
@@ -696,6 +776,10 @@ public class GUI extends Application {
         itemStage.setScene(itemScene);
         itemStage.show();
     }
+
+
+
+    //main method
     public static void main(String[] args) {
         launch(args);
     }

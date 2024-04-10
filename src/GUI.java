@@ -168,6 +168,7 @@ public class GUI extends Application {
                 if (result.isPresent() && result.get() == yesButton) {
                     // If user confirms, remove the item from the cart and update the view
                     cart.removeItem(item);
+                    item.setQuantity(1);  //reset quantity
                     cartButton.setText("" + cart.getNumItems());
                     cartItemsBox.getChildren().remove(itemBox);
                     totalCostLabel.setText("Total Cost: $"+ String.format("%.2f", cart.getTotalCost()));
@@ -200,6 +201,9 @@ public class GUI extends Application {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == yesButton) {
                 // Clear the cart and update the view
+                for(Item i : cart.getCart()){   //resets the quantity
+                    i.setQuantity(1);
+                }
                 cart.clearAll();
                 cartItemsBox.getChildren().clear();
                 totalCostLabel.setText("Total Cost: $0.00");
@@ -624,6 +628,8 @@ public class GUI extends Application {
     //handles when the remove button is pressed in the cart
     private void handleCartRemoval(Item item){
         cart.removeItem(item);
+        //resets quantity
+        item.setQuantity(1);
         cartButton.setText("" + cart.getNumItems());
     }
 
@@ -717,7 +723,7 @@ public class GUI extends Application {
         itemLayout.add(text, 1, 0);
 
         //add to cart button
-        Button addToCart = new Button("Add to cart");
+        Button addToCart = new Button("Add to Cart");
 
         //remove from cart button
         Button removeFromCart = new Button("Remove");

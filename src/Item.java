@@ -77,10 +77,4 @@ public abstract class Item {
     public void setQuantity(int newQuantity){
         this.quantity = newQuantity;
     }
-
-    //displays a copy of important information of the item
-    public void displayPhotocopy() {
-        System.out.println("[Photocopy of " + this.getName() + " (ID: " + this.getID() + ")]");
-        // Additional display logic specific to clothing items can be added here
-    }
 }

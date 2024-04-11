@@ -216,6 +216,7 @@ public class GUI extends Application {
                 //shuffles display order
                 Collections.shuffle(itemsForSale);
                 populateFullDisplay();
+                displayType = 0;
 
                 //repopulate discount display
                 discountDisplay.getChildren().clear();

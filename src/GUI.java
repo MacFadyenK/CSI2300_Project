@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
@@ -74,55 +73,42 @@ public class GUI extends Application {
 
     //add image paths into the item objects
     public void setImages(){
-        // Get the project directory
-        String projectDirectory = System.getProperty("user.dir");
-
         //tshirt
-        // Construct relative paths within the project folder
-        String relativeFilePath = "images\\TShirt.jpg";
-        // Construct the absolute path by concatenating project directory and relative path
-        String absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        tshirt.addImage(absoluteFilePath);
+        // Construct relative paths within the project src folder
+        String relativeFilePath = "/images/TShirt.jpg";
+        tshirt.addImage(relativeFilePath);
 
         //sweatshirt
-        relativeFilePath = "images\\Sweatshirt.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        sweatshirt.addImage(absoluteFilePath);
+        relativeFilePath = "/images/Sweatshirt.jpg";
+        sweatshirt.addImage(relativeFilePath);
 
         //sweatpants
-        relativeFilePath = "images\\Sweatpants.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        sweatpants.addImage(absoluteFilePath);
+        relativeFilePath = "/images/Sweatpants.jpg";
+        sweatpants.addImage(relativeFilePath);
 
         //tennis shoes
-        relativeFilePath = "images\\TennisShoes.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        tennisshoes.addImage(absoluteFilePath);
+        relativeFilePath = "/images/TennisShoes.jpg";
+        tennisshoes.addImage(relativeFilePath);
 
         //slides
-        relativeFilePath = "images\\Slides.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        slides.addImage(absoluteFilePath);
+        relativeFilePath = "/images/Slides.jpg";
+        slides.addImage(relativeFilePath);
 
         //dress shoes
-        relativeFilePath = "images\\DressShoes.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        dressshoes.addImage(absoluteFilePath);
+        relativeFilePath = "/images/DressShoes.jpg";
+        dressshoes.addImage(relativeFilePath);
 
         //ring
-        relativeFilePath = "images\\DiamondRing.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        ring.addImage(absoluteFilePath);
+        relativeFilePath = "/images/DiamondRing.jpg";
+        ring.addImage(relativeFilePath);
 
         //earrings
-        relativeFilePath = "images\\HoopEarrings.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        earrings.addImage(absoluteFilePath);
+        relativeFilePath = "/images/HoopEarrings.jpg";
+        earrings.addImage(relativeFilePath);
 
         //bracelet
-        relativeFilePath = "images\\Bracelet.jpg";
-        absoluteFilePath = "file:" + projectDirectory + File.separator + relativeFilePath;
-        bracelet.addImage(absoluteFilePath);
+        relativeFilePath = "/images/Bracelet.jpg";
+        bracelet.addImage(relativeFilePath);
     }
 
 
@@ -322,7 +308,7 @@ public class GUI extends Application {
                 //adds image of item
                 if(i.getImage() != null){
                     try {  //tries to add image with link
-                        ImageView imageView = new ImageView(new Image(i.getImage()));
+                        ImageView imageView = new ImageView(new Image(this.getClass().getResourceAsStream(i.getImage())));
                         discountDisplay.getChildren().add(imageView);
                         imageView.setFitHeight(75); 
                         imageView.setFitWidth(75);
@@ -563,7 +549,7 @@ public class GUI extends Application {
             //adds the item image to the display
             if(item.getImage() != null){
                 try { //tries to add image with image link
-                    ImageView imageView = new ImageView(new Image(item.getImage()));
+                    ImageView imageView = new ImageView(new Image(this.getClass().getResourceAsStream(item.getImage())));
                     this.getChildren().add(imageView);
                     imageView.setFitHeight(60); 
                     imageView.setFitWidth(60);
@@ -673,7 +659,7 @@ public class GUI extends Application {
         //shows item image
         if(item.getImage() != null){
             try{  //tries to add image
-                ImageView imageView = new ImageView(new Image(item.getImage()));
+                ImageView imageView = new ImageView(new Image(this.getClass().getResourceAsStream(item.getImage())));
                 itemLayout.add(imageView, 0, 0);
                 imageView.setFitHeight(175); 
                 imageView.setFitWidth(175);

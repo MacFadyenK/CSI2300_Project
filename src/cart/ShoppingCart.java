@@ -1,5 +1,8 @@
+package cart;
 import java.util.ArrayList;
 import java.util.List;
+
+import items.Item;
 
 public class ShoppingCart {
     private List<Item> items;

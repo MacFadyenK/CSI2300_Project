@@ -1,3 +1,5 @@
+package items.clothing;
+
 public class Sweatshirt extends ClothingItem {
     static private int number = 0;
 

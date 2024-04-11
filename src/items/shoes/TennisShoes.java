@@ -1,3 +1,5 @@
+package items.shoes;
+
 public class TennisShoes extends Shoes {
     static private int number = 0;
 

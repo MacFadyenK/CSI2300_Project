@@ -1,3 +1,7 @@
+package items.shoes;
+
+import items.Item;
+
 public abstract class Shoes extends Item {
     protected String color = "White";
     //returns the color of the shoes

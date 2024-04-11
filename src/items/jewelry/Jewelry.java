@@ -1,3 +1,6 @@
+package items.jewelry;
+
+import items.Item;
 
 public abstract class Jewelry extends Item {
     protected String metalType = "Gold";

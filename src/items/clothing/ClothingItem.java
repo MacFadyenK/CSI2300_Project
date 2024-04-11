@@ -1,3 +1,7 @@
+package items.clothing;
+
+import items.Item;
+
 public abstract class ClothingItem extends Item {
     protected String color = "White";
 

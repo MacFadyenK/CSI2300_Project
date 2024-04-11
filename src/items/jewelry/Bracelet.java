@@ -1,3 +1,5 @@
+package items.jewelry;
+
 public class Bracelet extends Jewelry {
     private static int number = 0;
 

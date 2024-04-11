@@ -4,6 +4,12 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
 
+import cart.ShoppingCart;
+import items.*;
+import items.clothing.*;
+import items.jewelry.*;
+import items.shoes.*;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;

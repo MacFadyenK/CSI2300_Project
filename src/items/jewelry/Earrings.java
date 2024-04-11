@@ -1,3 +1,5 @@
+package items.jewelry;
+
 public class Earrings extends Jewelry {
     private static int number;
 

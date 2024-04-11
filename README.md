@@ -15,6 +15,9 @@ By using this app, users will get the same feelings as they do when using other 
 Shopaholic will benefit those all around the world by creating a safe app that those with shopping addictions can go to without the risk of overspending.
 
 ## How to Use
+To run the .jar file, enter into terminal:
+java --module-path '(your_javafx_file_path)\\javafx-sdk-21.0.2\\lib' --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web -jar Shopaholic.jar  
+
 Please watch this video demonstration of the basic functions of the Shopaholic app: https://youtu.be/B7TGePpM-L0  
 Alternatively, check the User Manual for a more detailed explaination of the app's functions.
 
